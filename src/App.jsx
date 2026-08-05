@@ -1,5 +1,5 @@
 // Hook para manejar el estado local del input de búsqueda.
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // Importa estilos globales del componente principal.
 import "./App.css";
 // Hook para persistir estado en localStorage.
@@ -62,6 +62,20 @@ export default function App() {
   // Estado propio del input de búsqueda (no necesita persistirse).
   const [busqueda, setBusqueda] = useState("");
 
+  // Tema (claro/oscuro), persistido en localStorage.
+  const [tema, setTema] = useLocalStorage("agenda-tema", "claro");
+
+  // Aplica el atributo data-theme al <html> cada vez que cambia el tema,
+  // para que las variables CSS del modo oscuro tomen efecto globalmente.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", tema);
+  }, [tema]);
+
+  // Alterna entre modo claro y oscuro.
+  const alternarTema = () => {
+    setTema((prev) => (prev === "claro" ? "oscuro" : "claro"));
+  };
+
   // Agrega un nuevo contacto al estado.
   const agregarContacto = (nuevo) => {
     setContactos((prev) => [...prev, { id: Date.now(), ...nuevo }]);
@@ -79,7 +93,18 @@ export default function App() {
 
   return (
     <main className="app-container">
-      <h1 className="app-title">Agenda ADSO v2</h1>
+      <div className="app-header">
+        <h1 className="app-title">Agenda ADSO v3</h1>
+        <button
+          type="button"
+          className="btn-tema"
+          onClick={alternarTema}
+          aria-label="Cambiar entre modo claro y oscuro"
+          title="Cambiar entre modo claro y oscuro"
+        >
+          {tema === "claro" ? "🌙" : "☀️"}
+        </button>
+      </div>
       <Saludo />
 
       <FormularioContacto onAgregar={agregarContacto} />

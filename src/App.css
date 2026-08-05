@@ -1,11 +1,13 @@
-/* ---------- Variables de tema ---------- */
-:root {
+/* ---------- Variables de tema (modo claro, por defecto) ---------- */
+:root,
+:root[data-theme="claro"] {
   --verde: #059862;
   --verde-oscuro: #047a4e;
   --verde-suave: #e8f7f0;
   --texto: #1f2937;
   --texto-suave: #6b7280;
   --borde: #e5e7eb;
+  --fondo: #f9fafb;
   --fondo-tarjeta: #ffffff;
   --rojo: #dc2626;
   --rojo-oscuro: #b91c1c;
@@ -14,8 +16,30 @@
   --radio: 10px;
 }
 
+/* ---------- Variables de tema (modo oscuro) ---------- */
+:root[data-theme="oscuro"] {
+  --verde: #10b981;
+  --verde-oscuro: #34d399;
+  --verde-suave: #0f2e24;
+  --texto: #e5e7eb;
+  --texto-suave: #9ca3af;
+  --borde: #374151;
+  --fondo: #111827;
+  --fondo-tarjeta: #1f2937;
+  --rojo: #f87171;
+  --rojo-oscuro: #fca5a5;
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --sombra-hover: 0 6px 16px rgba(16, 185, 129, 0.18);
+  --radio: 10px;
+}
+
 * {
   box-sizing: border-box;
+}
+
+body {
+  background: var(--fondo);
+  transition: background-color 0.25s ease;
 }
 
 /* ---------- Contenedor general ---------- */
@@ -26,6 +50,16 @@
   font-family: "Segoe UI", system-ui, Arial, sans-serif;
   color: var(--texto);
   animation: aparecer 0.4s ease-out;
+  transition: color 0.25s ease;
+}
+
+/* ---------- Encabezado (título + botón de tema) ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  position: relative;
 }
 
 .app-title {
@@ -35,6 +69,34 @@
   font-weight: 700;
   margin: 0 0.25 0.25rem;
   letter-spacing: -0.02px;
+  transition: color 0.25s ease;
+}
+
+.btn-tema {
+  position: relative;
+  right: 0;
+  background: var(--fondo-tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  width: 42px;
+  height: 42px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sombra);
+  transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-tema:hover {
+  box-shadow: var(--sombra-hover);
+  transform: translateY(-1px) rotate(10deg);
+}
+
+.btn-tema:active {
+  transform: translateY(0) rotate(0deg);
 }
 
 .app-saludo {
@@ -54,14 +116,17 @@
   padding: 1rem;
   border-radius: var(--radio);
   box-shadow: var(--sombra);
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .form-contacto input {
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--borde);
+  background: var(--fondo-tarjeta);
+  color: var(--texto);
   font-size: 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
 .form-contacto input:focus {
@@ -97,9 +162,11 @@
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--borde);
+  background: var(--fondo-tarjeta);
+  color: var(--texto);
   font-size: 14px;
   margin-bottom: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease, color 0.25s ease;
 }
 
 .input-busqueda:focus {
@@ -130,7 +197,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.25s ease;
   animation: aparecer 0.3s ease-out;
 }
 
