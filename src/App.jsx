@@ -62,6 +62,9 @@ export default function App() {
   // Estado propio del input de búsqueda (no necesita persistirse).
   const [busqueda, setBusqueda] = useState("");
 
+  // Estado del input de saludo en tiempo real (no necesita persistirse).
+  const [nombreSaludo, setNombreSaludo] = useState("");
+
   // Tema (claro/oscuro), persistido en localStorage.
   const [tema, setTema] = useLocalStorage("agenda-tema", "claro");
 
@@ -133,6 +136,25 @@ export default function App() {
             />
           ))
         )}
+      </section>
+
+      <section className="saludo-vivo">
+        <label htmlFor="nombre-saludo" className="saludo-vivo-label">
+          ¿Cómo te llamas?
+        </label>
+        <input
+          id="nombre-saludo"
+          type="text"
+          className="saludo-vivo-input"
+          placeholder="Escribe tu nombre..."
+          value={nombreSaludo}
+          onChange={(e) => setNombreSaludo(e.target.value)}
+        />
+        <p className="saludo-vivo-mensaje">
+          {nombreSaludo.trim()
+            ? `¡Hola, ${nombreSaludo.trim()}! 👋 Bienvenido a tu agenda.`
+            : "Escribe tu nombre para ver el saludo aquí..."}
+        </p>
       </section>
     </main>
   );

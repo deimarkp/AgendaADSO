@@ -252,6 +252,53 @@ body {
   color: #fff;
 }
 
+/* ---------- Saludo en tiempo real ---------- */
+.saludo-vivo {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.25rem 1.4rem;
+  background: linear-gradient(180deg, var(--fondo-tarjeta) 0%, var(--verde-suave) 220%);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  animation: aparecer 0.3s ease-out;
+}
+
+.saludo-vivo-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.saludo-vivo-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: var(--fondo-tarjeta);
+  color: var(--texto);
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease, color 0.25s ease;
+}
+
+.saludo-vivo-input:focus {
+  outline: none;
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px var(--verde-suave);
+}
+
+.saludo-vivo-mensaje {
+  margin: 4px 0 0;
+  min-height: 1.4em;
+  color: var(--verde-oscuro);
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+
 /* ---------- Animación de entrada ---------- */
 @keyframes aparecer {
   from {
