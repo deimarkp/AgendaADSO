@@ -1,161 +1,128 @@
-// Hook para manejar el estado local del input de búsqueda.
 import { useState, useEffect } from "react";
-// Importa estilos globales del componente principal.
 import "./App.css";
-// Hook para persistir estado en localStorage.
-import useLocalStorage from "./hook/useLocalStorage";
-// Saludo debajo del título.
-import Saludo from "./components/Saludo";
-// Tarjeta visual para cada contacto.
-import ContactoCard from "./components/ContactoCard";
-// Formulario para crear contactos.
 import FormularioContacto from "./components/FormularioContacto";
+import ContactoCard from "./components/ContactoCard";
+import Saludo from "./components/Saludo";
 
-// Contacto de ejemplo usado solo la primera vez que se abre la app.
-const CONTACTOS_INICIALES = [
-  {
-    id: 1,
-    nombre: "Carolina Pérez",
-    telefono: "300 123 4567",
-    correo: "carolina@sena.edu.co",
-    etiqueta: "Compañera",
-  },
+// URL base de la API (JSON Server debe estar corriendo en puerto 3001)
+const API = "http://localhost:3001/contactos";
 
-  {
-    id: 2,
-    nombre: "Gustavo Bolaños",
-    telefono: "300 123 4567",
-    correo: "gustavo@sena.edu.co",
-    etiqueta: "Cliente",
-  },
-  {
-    id: 3,
-    nombre: "Cristian Acevedo",
-    telefono: "300 765 4321",
-    correo: "cristian@sena.edu.co",
-    etiqueta: "Instructor",
-  },
-  {
-    id: 4,
-    nombre: "Emanuel Muñoz",
-    telefono: "323 720 4129",
-    correo: "emanuelmun22@gmail.co",
-    etiqueta: "Amigo",
-  },
-  {
-    id: 5,
-    nombre: "Nubia Ramirez",
-    telefono: "318 281 1484",
-    correo: "nubia0526@hotmail.com",
-    etiqueta: "Familiar",
-  },
-];
-
-// Componente principal de la agenda.
 export default function App() {
-  // Lista de contactos, persistida en localStorage.
-  const [contactos, setContactos] = useLocalStorage(
-    "agenda-contactos",
-    CONTACTOS_INICIALES,
-  );
+  const [contactos, setContactos] = useState([]);
+  // Interruptor de la actividad complementaria "08 · Opcional" de index.html:
+  // muestra/oculta el campo "empresa" en el formulario y en las tarjetas.
+  const [mostrarEmpresa, setMostrarEmpresa] = useState(true);
 
-  // Estado propio del input de búsqueda (no necesita persistirse).
-  const [busqueda, setBusqueda] = useState("");
-
-  // Estado del input de saludo en tiempo real (no necesita persistirse).
-  const [nombreSaludo, setNombreSaludo] = useState("");
-
-  // Tema (claro/oscuro), persistido en localStorage.
-  const [tema, setTema] = useLocalStorage("agenda-tema", "claro");
-
-  // Aplica el atributo data-theme al <html> cada vez que cambia el tema,
-  // para que las variables CSS del modo oscuro tomen efecto globalmente.
+  // GET - Cargar contactos cuando el componente se monta
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", tema);
-  }, [tema]);
+    fetch(API)
+      .then((res) => res.json())
+      .then((data) => setContactos(data));
+  }, []);
 
-  // Alterna entre modo claro y oscuro.
-  const alternarTema = () => {
-    setTema((prev) => (prev === "claro" ? "oscuro" : "claro"));
-  };
-
-  // Agrega un nuevo contacto al estado.
+  // POST - Agregar un nuevo contacto
   const agregarContacto = (nuevo) => {
-    setContactos((prev) => [...prev, { id: Date.now(), ...nuevo }]);
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nuevo),
+    })
+      .then((res) => res.json())
+      .then((creado) => {
+        setContactos((prev) => [...prev, creado]); // Agregamos al estado
+      });
   };
 
-  // Elimina un contacto por su id.
+  // DELETE - Eliminar un contacto por su id
   const eliminarContacto = (id) => {
-    setContactos((prev) => prev.filter((c) => c.id !== id));
+    fetch(`${API}/${id}`, { method: "DELETE" }).then(() => {
+      setContactos((prev) => prev.filter((c) => c.id !== id));
+    });
   };
-
-  // Deriva una lista filtrada por nombre en cada render.
-  const contactosFiltrados = contactos.filter((c) =>
-    c.nombre.toLowerCase().includes(busqueda.trim().toLowerCase()),
-  );
 
   return (
-    <main className="app-container">
-      <div className="app-header">
-        <h1 className="app-title">Agenda ADSO v3</h1>
-        <button
-          type="button"
-          className="btn-tema"
-          onClick={alternarTema}
-          aria-label="Cambiar entre modo claro y oscuro"
-          title="Cambiar entre modo claro y oscuro"
-        >
-          {tema === "claro" ? "🌙" : "☀️"}
-        </button>
-      </div>
-      <Saludo />
+    <div className="min-h-screen bg-cream text-ink">
+      {/* Franja de "sobre aéreo": el detalle a rayas navy/rojo que da la identidad del diseño */}
+      <div className="h-3 w-full bg-stripes" />
 
-      <FormularioContacto onAgregar={agregarContacto} />
+      <main className="max-w-3xl mx-auto px-5 sm:px-8 pb-20 pt-10">
+        <header className="relative mb-10 animate-slideDown">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-airmail mb-2">
+                Correspondencia archivada
+              </p>
+              <h1 className="font-display italic font-semibold text-4xl sm:text-5xl text-navy leading-tight">
+                Agenda ADSO v4
+              </h1>
+              <p className="mt-3 max-w-md text-sm text-ink/70 leading-relaxed">
+                Archive sus contactos aqui gracias a{" "}
+                <code className="font-mono text-xs bg-navy text-cream px-1.5 py-0.5 rounded-lg">
+                  JSON Server
+                </code>
+                , ahora con un diseño de correo aéreo hecho con{" "}
+                <code className="font-mono text-xs bg-navy text-cream px-1.5 py-0.5 rounded-lg">
+                  TailwindCSS
+                </code>
+                .
+              </p>
+            </div>
 
-      <input
-        type="text"
-        className="input-busqueda"
-        placeholder="Buscar contacto por nombre..."
-        value={busqueda}
-        onChange={(e) => setBusqueda(e.target.value)}
-      />
+            {/* Matasellos con el contador, como sello postal */}
+            <div className="shrink-0 self-start sm:self-end animate-stampIn">
+              <div className="w-24 h-24 rounded-full border-2 border-dashed border-airmail flex flex-col items-center justify-center rotate-[-6deg] bg-parchment shadow-sm">
+                <span className="font-display font-bold text-2xl text-navy leading-none">
+                  {contactos.length}
+                </span>
+                <span className="font-mono text-[9px] uppercase tracking-widest text-airmail text-center leading-tight mt-1 px-1">
+                  {contactos.length === 1 ? "ficha" : "fichas"}
+                </span>
+              </div>
+            </div>
+          </div>
 
-      <section className="lista-contactos">
-        {contactosFiltrados.length === 0 ? (
-          <p className="sin-resultados">No se encontraron contactos</p>
-        ) : (
-          contactosFiltrados.map((c) => (
-            <ContactoCard
-              key={c.id}
-              id={c.id}
-              nombre={c.nombre}
-              telefono={c.telefono}
-              correo={c.correo}
-              etiqueta={c.etiqueta}
-              onDelete={eliminarContacto}
+          <label className="mt-5 inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wide text-navy/80 cursor-pointer bg-parchment border border-dashed border-kraft/60 rounded-full px-4 py-2">
+            <input
+              type="checkbox"
+              checked={mostrarEmpresa}
+              onChange={(e) => setMostrarEmpresa(e.target.checked)}
+              className="accent-airmail"
             />
-          ))
-        )}
-      </section>
+            Mostrar campo "empresa"
+          </label>
+        </header>
 
-      <section className="saludo-vivo">
-        <label htmlFor="nombre-saludo" className="saludo-vivo-label">
-          ¿Cómo te llamas?
-        </label>
-        <input
-          id="nombre-saludo"
-          type="text"
-          className="saludo-vivo-input"
-          placeholder="Escribe tu nombre..."
-          value={nombreSaludo}
-          onChange={(e) => setNombreSaludo(e.target.value)}
-        />
-        <p className="saludo-vivo-mensaje">
-          {nombreSaludo.trim()
-            ? `¡Hola, ${nombreSaludo.trim()}! 👋 Bienvenido a tu agenda.`
-            : "Escribe tu nombre para ver el saludo aquí..."}
-        </p>
-      </section>
-    </main>
+        <div className="space-y-6">
+          <FormularioContacto
+            onAgregar={agregarContacto}
+            mostrarEmpresa={mostrarEmpresa}
+          />
+
+          {contactos.length === 0 ? (
+            <p className="text-center font-mono text-sm text-navy/60 bg-parchment/60 border border-dashed border-kraft/50 rounded-2xl py-8 px-4">
+              Aún no hay contactos archivados.
+            </p>
+          ) : (
+            <section
+              className="contacto-grid grid grid-cols-1 sm:grid-cols-2 gap-5"
+              aria-label="Contactos archivados"
+            >
+              {contactos.map((c) => (
+                <ContactoCard
+                  key={c.id}
+                  {...c}
+                  mostrarEmpresa={mostrarEmpresa}
+                  onEliminar={eliminarContacto}
+                />
+              ))}
+            </section>
+          )}
+
+          {/* Componente de saludo en tiempo real, en su propio archivo
+              (src/components/Saludo.jsx), separado de la lógica de la agenda. */}
+          <Saludo />
+        </div>
+      </main>
+    </div>
   );
 }

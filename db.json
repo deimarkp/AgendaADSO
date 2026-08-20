@@ -1,0 +1,12 @@
+{
+  "contactos": [
+    {
+      "id": "1",
+      "nombre": "Samuel David",
+      "telefono": "300 123 4567",
+      "correo": "saramuñoz@correo.com",
+      "etiqueta": "SENA",
+      "empresa": "SENA CTMA"
+    }
+  ]
+}

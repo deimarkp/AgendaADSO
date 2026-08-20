@@ -1,108 +1,132 @@
 import { useState } from "react";
 
-function FormularioContacto({ onAgregar }) {
-  // Estado del formulario: un solo objeto con los campos controlados.
-  const [form, setForm] = useState({
-    nombre: "",
-    telefono: "",
-    correo: "",
-    etiqueta: "",
-    empresa: "",
-  });
+export default function FormularioContacto({ onAgregar, mostrarEmpresa = true }) {
+  const base = { nombre: "", telefono: "", correo: "", etiqueta: "", empresa: "" };
+  const [form, setForm] = useState(base);
+  const [error, setError] = useState("");
 
-  const manejarCambio = (e) => {
+  const onChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((f) => ({ ...f, [name]: value }));
+    if (error) setError("");
   };
 
-  const manejarEnvio = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (!form.nombre.trim() || !form.telefono.trim()) return;
+
+    if (!form.nombre || !form.telefono || !form.correo) {
+      setError("Nombre, teléfono y correo son obligatorios.");
+      return;
+    }
 
     onAgregar(form);
-    // Limpia el formulario tras agregar.
-    setForm({ nombre: "", telefono: "", correo: "", etiqueta: "", empresa: "" });
+    setForm(base);
   };
+
+  const inputClass =
+    "w-full bg-transparent border-0 border-b-2 border-navy/20 focus:border-airmail px-0.5 py-1.5 text-sm text-ink outline-none transition-colors placeholder:text-ink/30";
+  const labelClass =
+    "font-mono text-[10px] uppercase tracking-[0.18em] text-navy/70";
 
   return (
     <form
-      onSubmit={manejarEnvio}
-      className="grid grid-cols-1 sm:grid-cols-2 gap-3
-bg-white border border-gray-200 rounded-lg
-shadow-sm p-5"
+      className="relative bg-white/70 border border-navy/15 rounded-2xl shadow-[0_8px_24px_rgba(23,37,84,0.10)] p-6 pt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4 animate-postIn"
+      onSubmit={onSubmit}
     >
+      <span className="absolute -top-3 left-5 bg-navy text-cream font-mono text-[10px] uppercase tracking-[0.2em] px-3 py-1 rounded-lg">
+        Formulario Nº 04
+      </span>
+
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">Nombre *</label>
+        <label htmlFor="nombre" className={labelClass}>
+          Nombre *
+        </label>
         <input
+          id="nombre"
           name="nombre"
           value={form.nombre}
-          onChange={manejarCambio}
-          className="w-full border border-gray-300 rounded-md
-px-4 py-2 outline-none focus:ring-2
-focus:ring-purple-500"
+          onChange={onChange}
+          placeholder="Ej. Samuel David"
+          autoComplete="off"
+          className={inputClass}
         />
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">Teléfono *</label>
+        <label htmlFor="telefono" className={labelClass}>
+          Teléfono *
+        </label>
         <input
+          id="telefono"
           name="telefono"
           value={form.telefono}
-          onChange={manejarCambio}
-          className="w-full border border-gray-300 rounded-md
-px-4 py-2 outline-none focus:ring-2
-focus:ring-purple-500"
+          onChange={onChange}
+          placeholder="Ej. 300 123 4567"
+          autoComplete="off"
+          className={inputClass}
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">Correo</label>
+      <div className={`space-y-1 ${mostrarEmpresa ? "" : "sm:col-span-2"}`}>
+        <label htmlFor="correo" className={labelClass}>
+          Correo *
+        </label>
         <input
+          id="correo"
           name="correo"
+          type="email"
           value={form.correo}
-          onChange={manejarCambio}
-          className="w-full border border-gray-300 rounded-md
-px-4 py-2 outline-none focus:ring-2
-focus:ring-purple-500"
+          onChange={onChange}
+          placeholder="Ej. Saramuñoz@correo.com"
+          autoComplete="off"
+          className={inputClass}
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-700">Etiqueta</label>
+      {mostrarEmpresa && (
+        <div className="space-y-1">
+          <label htmlFor="empresa" className={labelClass}>
+            Empresa
+          </label>
+          <input
+            id="empresa"
+            name="empresa"
+            value={form.empresa}
+            onChange={onChange}
+            placeholder="Ej. SENA CTMA"
+            autoComplete="off"
+            className={inputClass}
+          />
+        </div>
+      )}
+
+      <div className="space-y-1 sm:col-span-2">
+        <label htmlFor="etiqueta" className={labelClass}>
+          Etiqueta
+        </label>
         <input
+          id="etiqueta"
           name="etiqueta"
           value={form.etiqueta}
-          onChange={manejarCambio}
-          placeholder="Amigo, Cliente, Instructor..."
-          className="w-full border border-gray-300 rounded-md
-px-4 py-2 outline-none focus:ring-2
-focus:ring-purple-500"
+          onChange={onChange}
+          placeholder="Ej. Trabajo, Familia, SENA..."
+          autoComplete="off"
+          className={inputClass}
         />
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-semibold text-gray-600">Empresa</label>
-        <input
-          name="empresa"
-          value={form.empresa}
-          onChange={manejarCambio}
-          placeholder="SENA, Independiente..."
-          className="w-full border border-gray-300 rounded-md
-px-4 py-2 outline-none focus:ring-2
-focus:ring-purple-500"
-        />
-      </div>
+      {error && (
+        <p className="sm:col-span-2 -mt-1 font-mono text-xs font-semibold text-airmail animate-shake">
+          ⚠ {error}
+        </p>
+      )}
 
       <button
         type="submit"
-        className="sm:col-span-2 bg-purple-600
-hover:bg-purple-700 text-white font-semibold
-rounded-lg py-2.5 transition"
+        className="sm:col-span-2 mt-1 bg-navy hover:bg-navy-dark text-cream font-mono text-xs uppercase tracking-[0.18em] rounded-lg py-3 border-2 border-dashed border-cream/0 hover:border-airmail/40 transition-colors"
       >
-        Agregar contacto
+        Archivar contacto
       </button>
     </form>
   );
 }
-
-export default FormularioContacto;
